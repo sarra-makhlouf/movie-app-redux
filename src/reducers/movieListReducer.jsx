@@ -1,4 +1,8 @@
-import { ADD_MOVIE } from "../constants/actionsTypes";
+import {
+  ADD_MOVIE,
+  DELETE_MOVIE,
+  MODIFY_MOVIE
+} from "../constants/actionsTypes";
 import FightClub from "../pictures/fight club.jpg";
 import Snatch from "../pictures/snatch.jpg";
 import Vendetta from "../pictures/v for vendetta.jpg";
@@ -33,8 +37,20 @@ const initialState = [
 
 function movieListReducer(state = initialState, action) {
   if (action.type === ADD_MOVIE) {
+    console.log(action.movie);
     return state.concat(action.movie);
   }
+  if (action.type === MODIFY_MOVIE) {
+    return state.map(el => {
+      if (el.i === action.i) {
+        return action.movie;
+      } else return el;
+    });
+  }
+  if (action.type === DELETE_MOVIE) {
+    return state.filter(el => el.title !== action.title);
+  }
+
   return state;
 }
 

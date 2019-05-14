@@ -1,16 +1,32 @@
 import React, { Component } from 'react';
 import './movieCard.css'
 import SearchRating from './searchRating';
+import { connect } from 'react-redux';
+import {deleteMovie, editMovie} from '../actions/actions';
 
-export default class MovieCard extends Component {
+ class MovieCard extends Component {
     render() {
+        const {picture, title, date, rating} = this.props.movie
         return (
         <div className="card">
-            <img src={this.props.movie.picture} alt={this.props.movie.title} className="picture"/>
-            <h2 className="title">{this.props.movie.title}</h2>
-            <h4 className="date">{this.props.movie.date}</h4>
-            <SearchRating rate={this.props.movie.rating}/>
+            <img src={picture} alt={title} className="picture"/>
+            <h2 className="title">{title}</h2>
+            <h4 className="date">{date}</h4>
+            <SearchRating rate={rating}/>
+            <div>
+                <button className="movie-button" onClick={()=>{this.props.editMovie(this.props.movie); this.props.edit()}}>Edit</button>
+                <button className="movie-button" onClick={()=>{this.props.deleteMovie(title)}}>Remove</button>
+            </div>
         </div>
     )
   }
 }
+const mapDispatchToProps = dispatch => ({
+    deleteMovie: title => {
+        dispatch(deleteMovie(title))
+    }, 
+    editMovie: movie => {
+        dispatch(editMovie(movie))
+    } 
+})
+export default connect(null, mapDispatchToProps)(MovieCard)

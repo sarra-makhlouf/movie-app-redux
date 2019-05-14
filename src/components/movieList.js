@@ -3,23 +3,50 @@ import MovieCard from "./movieCard";
 import AddMovie from "./addMovie";
 import "./movieList.css";
 import { connect } from "react-redux";
-import { addMovie } from "../actions/actions";
+import { addMovie, modifyMovie } from "../actions/actions";
 
 class MovieList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false
+      visible: false,
+      edit: false,
+      picture: "",
+      title: "",
+      date: "",
+      rating: ""
     };
   }
-  addOne = e => {
+
+  componentDidUpdate(prevProps){
+    if(prevProps.editMovie !== this.props.editMovie){ this.setState(
+      {
+        picture: this.props.editMovie.picture,
+        title: this.props.editMovie.title,
+        date: this.props.editMovie.date,
+        rating: this.props.editMovie.rating
+      }) }
+ }
+  addOne = () => {
     this.setState({
       visible: true
     });
   };
- 
+  edit = () => {
+    this.setState(
+      {
+        picture: this.props.editMovie.picture,
+        title: this.props.editMovie.title,
+        date: this.props.editMovie.date,
+        rating: this.props.editMovie.rating,
+        edit: true,
+      }
+    );
+    this.addOne();
+  };
   close = e => {
     this.setState({
+      edit: false,
       visible: false,
       picture: "",
       title: "",
@@ -27,20 +54,20 @@ class MovieList extends Component {
       rating: ""
     });
   };
-  
+
   change = e => {
     this.setState({
       [e.target.name]: e.target.value
     });
   };
   render() {
-    return (
+    return  (
       <div>
         <div className="list">
-          {this.props.list.map(el => (
-            <MovieCard movie={el} />
+          {this.props.list.map((el, i) => (
+            <MovieCard movie={el} key={i} edit={this.edit} />
           ))}
-          <AddMovie onAdd={this.addOne} />
+          <AddMovie addOne={this.addOne} />
         </div>
         <div
           className="modal"
@@ -69,7 +96,7 @@ class MovieList extends Component {
           />
           <p>Rating</p>
           <input
-            type="text"
+            type="number"
             name="rating"
             onChange={this.change}
             value={this.state.rating}
@@ -78,14 +105,14 @@ class MovieList extends Component {
             <input
               type="button"
               onClick={() => {
-                if (this.state.rating.match(/[0-5]/g)) {
-                const {title, image, year, rating} = this.state
-                const newMovie = {title, image, year, rating}
-                this.props.addMovie(newMovie);
-                this.close()
+                if (this.state.rating<6&&this.state.rating>0) {
+                  const { title, picture, date, rating } = this.state;
+                  const newMovie = { title, picture, date, rating };
+                  !this.state.edit?this.props.addMovie(newMovie):this.props.modifyMovie(newMovie, this.props.inedx);
+                  this.close();
                 } else return alert("Please enter a valid rating");
               }}
-              value="Add"
+              value={(!this.state.edit)?"Add":"Edit"}
             />
             <input type="button" onClick={this.close} value="Close" />
           </div>
@@ -94,15 +121,24 @@ class MovieList extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  const editMovie= state.editReducer;
+  return {
+    editMovie,
+  inedx: state.movieListReducer.findIndex(el => el === editMovie)}
+}
 
 const mapDispatchToProps = dispatch => ({
   addMovie: newMovie => {
     dispatch(addMovie(newMovie));
-  }
+  }, 
+  modifyMovie: (movie, i) => {
+      dispatch(modifyMovie(movie, i))
+  } 
 });
 
 const ConnectedMovieList = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(MovieList);
 

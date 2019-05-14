@@ -6,7 +6,7 @@ export default class AddMovie extends Component {
   render() {
     return (
       <div>
-        <button className="card" onClick={this.props.onAdd}>+</button>
+        <button className="card add-button" onClick={this.props.addOne}>+</button>
       </div>
     )
   }
