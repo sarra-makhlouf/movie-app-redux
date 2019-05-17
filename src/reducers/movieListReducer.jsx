@@ -41,8 +41,8 @@ function movieListReducer(state = initialState, action) {
     return state.concat(action.movie);
   }
   if (action.type === MODIFY_MOVIE) {
-    return state.map(el => {
-      if (el.i === action.i) {
+    return state.map((el, i) => {
+      if (i === action.i) {
         return action.movie;
       } else return el;
     });
