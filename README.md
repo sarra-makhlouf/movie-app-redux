@@ -1,1 +1,1 @@
-﻿## This a movie-app created with redux.
+﻿## This is a movie-app created with redux.
